@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>安徒生童话屋 - 轻量测试</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23EE7B4B'/%3E%3Cpath d='M7 8c5-1 9 0 9 3v13c0-3-4-4-9-3V8Zm18 0c-5-1-9 0-9 3v13c0-3 4-4 9-3V8Z' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+  <style>body{font:16px/1.7 system-ui,sans-serif;max-width:780px;margin:40px auto;padding:0 20px;color:#4A3026;background:#FFF9ED}li{margin:8px 0}.pass{color:#477245}.fail{color:#A23D32}</style>
+</head>
+<body><h1>存储与搜索测试</h1><ol id="results"></ol><p id="summary"></p>
+<script>
+window.stories = [
+  { id: 'sea', title: '海的女儿', summary: '小人鱼的故事', content: '<p>她生活在蔚蓝的大海深处。</p>', category: '奇幻' },
+  { id: 'duck', title: '丑小鸭', summary: '关于成长与勇气', content: '<p>湖边住着一只小鸭。</p>', category: '成长' }
+];
+</script>
+<script src="storage.js"></script><script src="search.js"></script><script src="tests.js"></script>
+</body></html>

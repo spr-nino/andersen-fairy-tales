@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>安徒生童话世界 — 沉浸式儿童阅读</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23EE7B4B'/%3E%3Cpath d='M7 8c5-1 9 0 9 3v13c0-3-4-4-9-3V8Zm18 0c-5-1-9 0-9 3v13c0-3 4-4 9-3V8Z' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
 <style>
 /* ============================================================
    CSS VARIABLES
@@ -636,94 +638,137 @@ body.night .ambient-light {
   .welcome-title { font-size: 24px; padding: 0 20px; }
 }
 </style>
+<style id="reading-page-redesign">
+:root {
+  --page: #F6EBDD; --nav: #FFFDF7; --paper: #FFF9ED; --ink: #4A3026;
+  --body-ink: #4A403A; --muted: #84695C; --coral: #EE7B4B; --yellow: #F4C95D;
+  --sage: #83A97A; --selected: #FBE3C7; --line: #E8D1B4; --sidebar: 270px;
+  --reader-size: 21px; --reader-leading: 1.95;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; overflow: hidden; }
+body { margin: 0; opacity: 1 !important; background: var(--page) !important; color: var(--ink); font-family: "Noto Serif SC", "Songti SC", "STSong", serif; user-select: text; }
+button { font: inherit; }
+#welcome-overlay, .canvas-layer, .ambient-light, .moon, #clouds-container, .last-read-indicator { display: none !important; }
+#main-app { display: grid; grid-template-rows: 68px 1fr; grid-template-columns: var(--sidebar) 1fr; height: 100vh; opacity: 1 !important; background: var(--page); }
+.topbar { grid-column: 1 / -1; height: 68px; display: grid; grid-template-columns: var(--sidebar) 1fr auto; align-items: center; gap: 24px; padding: 0 32px 0 28px; background: var(--nav); border-bottom: 1px solid var(--line); box-shadow: 0 2px 10px rgba(103,74,48,.05); z-index: 20; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
+.brand-mark { width: 27px; height: 24px; color: var(--coral); }
+.top-nav { display: flex; align-items: center; justify-content: center; gap: 30px; height: 100%; }
+.top-nav a { position: relative; display: inline-flex; align-items: center; height: 100%; color: var(--muted); text-decoration: none; font-size: 14px; }
+.top-nav a.active { color: var(--ink); font-weight: 700; }
+.top-nav a.active::after { content: ""; position: absolute; left: 3px; right: 3px; bottom: 0; height: 3px; background: var(--coral); border-radius: 3px 3px 0 0; }
+.top-actions { display: flex; align-items: center; gap: 10px; }
+.icon-btn, .avatar-btn { width: 42px; height: 42px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--ink); display: grid; place-items: center; cursor: pointer; transition: transform .18s ease, background .18s ease, border-color .18s ease; }
+.icon-btn:hover, .avatar-btn:hover { background: var(--selected); border-color: var(--line); transform: translateY(-1px); }
+.avatar-btn { background: #F4C95D; color: #fff; border-radius: 50%; font-weight: 700; }
+#sidebar { grid-row: 2; grid-column: 1; width: var(--sidebar); padding: 28px 16px 20px; background: #F8EEDF; border-right: 1px solid var(--line); box-shadow: none; position: relative; z-index: 10; overflow: hidden; }
+#sidebar::before, #sidebar::after { display: none; }
+.sidebar-header { padding: 0 10px 18px; text-align: left; border-bottom: 1px solid var(--line); }
+.sidebar-header h2 { margin: 0; color: var(--ink); font-family: inherit; font-size: 18px; letter-spacing: .06em; text-shadow: none; }
+.sidebar-header .lamp-icon { display: none; }
+.story-list { height: calc(100% - 52px); overflow-y: auto; padding: 16px 0 20px; }
+.story-item { min-height: 64px; display: flex; align-items: center; gap: 12px; margin: 3px 0; padding: 8px 10px 8px 14px; color: var(--muted); border: 0; border-radius: 10px; position: relative; cursor: pointer; transition: transform .2s ease, background .2s ease, color .2s ease; }
+.story-item:hover { background: #FFF8E8; transform: translateX(3px); color: var(--ink); }
+.story-item.active { background: var(--selected); color: var(--ink); font-weight: 700; }
+.story-item.active::before { content: ""; position: absolute; left: 0; top: 13px; bottom: 13px; width: 4px; border-radius: 0 3px 3px 0; background: var(--coral); }
+.story-item.active::after { content: ""; position: absolute; right: 12px; top: 0; width: 10px; height: 19px; background: var(--coral); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%); animation: bookmarkDrop .4s ease both; }
+.story-cover { width: 40px; height: 48px; flex: 0 0 40px; border: 1px solid #DDBF9E; border-radius: 6px 7px 5px 5px; background: #F4C95D; position: relative; overflow: hidden; box-shadow: 2px 2px 0 rgba(133,91,55,.08); }
+.story-cover::before { content: ""; position: absolute; width: 24px; height: 14px; left: 8px; top: 17px; border: 2px solid rgba(255,255,255,.8); border-radius: 50%; transform: rotate(-12deg); }
+.story-cover::after { content: ""; position: absolute; width: 8px; height: 8px; left: 16px; top: 10px; border-radius: 50%; background: rgba(255,255,255,.8); }
+.story-item:nth-child(3n) .story-cover { background: var(--coral); } .story-item:nth-child(3n+1) .story-cover { background: var(--sage); } .story-item:nth-child(4n) .story-cover { background: #D99B7B; }
+.story-meta { min-width: 0; display: grid; gap: 4px; }.story-item .name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.story-status { color: #A68B7A; font: 11px/1.2 "Noto Sans SC", sans-serif; }
+#content-area { grid-row: 2; grid-column: 2; min-width: 0; min-height: 0; display: flex; align-items: stretch; justify-content: center; position: relative; overflow: hidden; padding: 34px 42px 30px; background: var(--page); }
+#content-area::before, #content-area::after { content: ""; position: absolute; pointer-events: none; opacity: .55; }
+#content-area::before { width: 12px; height: 12px; top: 42px; right: 6%; border: 2px solid var(--yellow); transform: rotate(18deg); box-shadow: 18px 12px 0 -2px var(--sage); }
+#content-area::after { width: 72px; height: 20px; left: 5%; bottom: 12%; border-top: 2px solid #D9AE8A; border-radius: 50%; transform: rotate(-8deg); }
+.reading-card-wrapper { width: min(960px, 100%); height: 100%; position: relative; z-index: 3; animation: paperRise .55s ease both; }
+.reading-card { height: 100%; display: flex; flex-direction: column; overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 16px 35px rgba(113,75,45,.10), 0 2px 5px rgba(113,75,45,.05); }
+.card-header { display: grid; grid-template-columns: 1fr minmax(190px, 240px); gap: 22px; align-items: end; padding: 34px 54px 22px; border-bottom: 1px solid #F0DEC8; flex-shrink: 0; }
+.card-header::after { content: ""; position: absolute; }
+.card-header .story-title { margin: 0 0 10px; color: var(--ink); font-family: "ZCOOL KuaiLe", "Noto Serif SC", serif; font-size: 34px; font-weight: 600; letter-spacing: .04em; }
+.story-kicker { display: flex; gap: 14px; color: var(--muted); font: 13px/1.4 "Noto Sans SC", sans-serif; }.story-kicker span + span { padding-left: 14px; border-left: 1px solid var(--line); }
+.story-summary, .story-subtitle { display: none; }
+.progress-wrap { display: grid; gap: 9px; align-self: center; width: 100%; }.progress-label { display: flex; justify-content: space-between; color: var(--muted); font: 12px "Noto Sans SC", sans-serif; }.progress-track { height: 8px; border-radius: 10px; background: #F2E5D2; position: relative; overflow: visible; }.reading-progress-bar { height: 100%; border-radius: inherit; background: var(--sage); transition: width .25s ease; position: relative; }.reading-progress-bar::after { content: ""; position: absolute; right: -5px; top: 50%; width: 12px; height: 12px; border-radius: 50%; background: var(--yellow); border: 2px solid var(--paper); transform: translateY(-50%); }
+.card-body { width: min(740px, calc(100% - 80px)); margin: 0 auto; flex: 1; overflow-y: auto; padding: 26px 0 34px; font-size: var(--reader-size); line-height: var(--reader-leading); color: var(--body-ink); scrollbar-width: thin; scrollbar-color: #D8B99A transparent; }.card-body p { margin: 0 0 1.25em; text-indent: 2em; text-align: left; }.card-body p:last-child { margin-bottom: 0; }
+.reading-tools { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 16px 28px 18px; border-top: 1px solid #F0DEC8; background: rgba(255,253,247,.7); flex-shrink: 0; }.tool-group { display: flex; align-items: center; gap: 8px; }.tool-group:last-child { justify-content: flex-end; }.tool-btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 13px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; transition: transform .15s ease, background .15s ease, border-color .15s ease; }.tool-btn:hover { background: #FFF8E8; border-color: #DDB994; color: var(--ink); }.tool-btn:active { transform: translateY(2px); }.tool-btn.primary { background: var(--sage); border-color: var(--sage); color: white; }.tool-btn.next { background: var(--coral); border-color: var(--coral); color: white; }.tool-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }.tool-btn.reading svg { animation: soundWave 1.2s ease-in-out infinite; }
+.mobile-menu-btn { display: none; }.sidebar-overlay { display: none; }
+body.night { --page: #3A302D; --nav: #453A35; --paper: #50443D; --ink: #F7EAD4; --body-ink: #F0E3D0; --muted: #CDB7A0; --selected: #685448; --line: #765F50; }.night #sidebar { background: #40342F; border-color: var(--line); }.night .reading-tools { background: rgba(69,57,51,.8); border-color: var(--line); }.night .card-header { border-color: var(--line); }.night .progress-track { background: #6B594D; }.night .story-status { color: #BCA18B; }.night .icon-btn:hover, .night .avatar-btn:hover, .night .tool-btn:hover { background: #675449; }
+@keyframes paperRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } } @keyframes bookmarkDrop { from { transform: translateY(-8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } } @keyframes soundWave { 0%,100% { transform: scaleY(.65); } 50% { transform: scaleY(1.15); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+@media (max-width: 900px) { :root { --sidebar: 238px; } .topbar { padding-right: 18px; gap: 12px; }.top-nav { gap: 16px; }.top-nav a { font-size: 13px; }.card-header { padding-left: 36px; padding-right: 36px; }.card-body { width: min(740px, calc(100% - 56px)); } }
+@media (max-width: 700px) { html, body { overflow: hidden; }.topbar { grid-template-columns: 1fr auto; height: 62px; padding: 0 16px; }.brand { font-size: 14px; }.top-nav { display: none; }.top-actions .avatar-btn { display: none; }.mobile-menu-btn { display: grid; position: fixed; left: 14px; top: 71px; z-index: 31; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 12px; background: var(--nav); color: var(--ink); box-shadow: 0 4px 12px rgba(88,56,31,.1); cursor: pointer; }.mobile-menu-btn svg { width: 20px; }.sidebar-overlay { display: block; position: fixed; inset: 62px 0 0; background: rgba(53,36,27,.25); z-index: 24; opacity: 0; pointer-events: none; transition: opacity .25s ease; }.sidebar-overlay.show { opacity: 1; pointer-events: auto; } #main-app { grid-template-columns: 1fr; grid-template-rows: 62px 1fr; }.reading-card-wrapper { width: 100%; }.reading-card { border-radius: 16px; }.card-header { grid-template-columns: 1fr; gap: 16px; padding: 58px 22px 18px; }.card-header .story-title { font-size: 28px; }.progress-wrap { max-width: 100%; }.card-body { width: calc(100% - 40px); padding: 22px 0 28px; font-size: 19px; line-height: 1.9; }.reading-tools { grid-template-columns: 1fr auto 1fr; padding: 12px 12px 14px; gap: 4px; }.tool-btn { padding: 0 9px; font-size: 12px; }.tool-btn span { display: none; }.tool-group { gap: 4px; } #content-area { grid-column: 1; padding: 10px 10px 12px; } #sidebar { position: fixed; left: 0; top: 62px; bottom: 0; width: min(290px, 86vw); transform: translateX(-105%); transition: transform .28s ease; z-index: 30; box-shadow: 8px 0 22px rgba(73,46,28,.12); } #sidebar.open { transform: translateX(0); } }
+@media (max-width: 390px) { .card-header { padding-left: 18px; padding-right: 18px; }.card-body { width: calc(100% - 32px); font-size: 18px; }.tool-btn { min-width: 44px; }.reading-tools { padding-left: 8px; padding-right: 8px; } }
+</style>
 </head>
 <body>
 
-<!-- ============================================================
-     WELCOME OVERLAY
-     ============================================================ -->
-<div id="welcome-overlay">
-  <div class="welcome-stars" id="welcome-stars"></div>
-
-  <div class="book-container">
-    <div class="book-glow"></div>
-    <div class="book">
-      <div class="book-spine"></div>
-      <div class="book-cover"></div>
-    </div>
-  </div>
-
-  <h1 class="welcome-title">欢迎来到安徒生童话世界</h1>
-  <p class="welcome-subtitle">✨ 每晚一个好梦 ✨</p>
-  <button class="welcome-btn" id="enter-btn">📖 进入童话世界</button>
-
-  <div id="welcome-particles"></div>
-</div>
-
-<!-- ============================================================
-     MOBILE MENU BUTTON
-     ============================================================ -->
-<button class="mobile-menu-btn" id="menu-toggle" title="目录">📚</button>
-
-<!-- ============================================================
-     SIDEBAR OVERLAY (mobile)
-     ============================================================ -->
-<div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-<!-- ============================================================
-     MAIN APP
-     ============================================================ -->
 <div id="main-app">
-
-  <!-- SIDEBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 28 24" aria-hidden="true"><path d="M14 21c-3-3-7-4-12-3V3c5-1 9 0 12 3m0 15c3-3 7-4 12-3V3c-5-1-9 0-12 3m0 0v15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span>安徒生童话屋</span>
+    </div>
+    <nav class="top-nav" aria-label="主导航">
+      <a href="#/" data-nav="home">首页</a><a href="#/stories" data-nav="stories">故事书架</a><a href="#/favorites" data-nav="favorites">我的收藏</a><a href="#/history" data-nav="history">阅读足迹</a>
+    </nav>
+    <div class="top-actions">
+      <button class="icon-btn" id="btn-search" aria-label="搜索故事" title="搜索"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+      <button class="avatar-btn" aria-label="用户中心" title="用户中心">安</button>
+      <button class="mobile-nav-btn" id="nav-toggle" aria-label="打开导航菜单" aria-controls="mobile-nav"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    </div>
+  </header>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="移动导航"><a href="#/" data-nav="home">首页</a><a href="#/stories" data-nav="stories">故事书架</a><a href="#/favorites" data-nav="favorites">我的收藏</a><a href="#/history" data-nav="history">阅读足迹</a></nav>
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+  <button class="mobile-menu-btn" id="menu-toggle" aria-label="打开故事书架" title="故事书架"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16M4 12h16M4 19h16"/></svg></button>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
   <aside id="sidebar">
     <div class="sidebar-header">
-      <span class="lamp-icon">🕯️</span>
-      <h2>安徒生童话</h2>
+      <h2>故事书架</h2>
     </div>
-    <nav class="story-list" id="story-list">
-      <!-- Populated by JS -->
-    </nav>
+    <nav class="story-list" id="story-list" aria-label="故事列表"></nav>
   </aside>
-
-  <!-- CONTENT AREA -->
   <main id="content-area">
-    <canvas class="canvas-layer" id="bg-canvas"></canvas>
-    <canvas class="canvas-layer" id="particle-canvas"></canvas>
-    <div class="ambient-light"></div>
-
-    <div class="moon" id="moon"></div>
-    <div id="clouds-container"></div>
-
+    <canvas class="canvas-layer" id="bg-canvas" aria-hidden="true"></canvas><canvas class="canvas-layer" id="particle-canvas" aria-hidden="true"></canvas>
     <div class="reading-card-wrapper" id="card-wrapper">
       <div class="reading-card" id="reading-card">
         <div class="card-header">
-          <h2 class="story-title" id="story-title">海的女儿</h2>
-          <p class="story-subtitle" id="story-subtitle">The Little Mermaid</p>
-          <p class="story-summary" id="story-summary"></p>
+          <div><h1 class="story-title" id="story-title">海的女儿</h1><div class="story-kicker"><span>第1章</span><span id="progress-text">阅读进度 18%</span><span id="time-left">预计剩余 6 分钟</span></div></div>
+          <div class="progress-wrap"><div class="progress-label"><span>本章进度</span><span id="progress-percent">18%</span></div><div class="progress-track"><div class="reading-progress-bar" id="progress-bar" style="width:18%"></div></div></div>
         </div>
-        <div class="card-body" id="card-body">
-          <!-- Story content -->
-        </div>
+        <article class="card-body" id="card-body" tabindex="0"></article>
+        <footer class="reading-tools" aria-label="阅读工具">
+          <div class="tool-group"><button class="tool-btn" id="btn-prev"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg><span>上一页</span></button></div>
+          <div class="tool-group">
+            <button class="tool-btn primary" id="btn-music"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg><span>朗读</span></button>
+            <button class="tool-btn" id="btn-favorite"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4V3Z"/></svg><span>收藏</span></button>
+            <button class="tool-btn" id="btn-font"><svg viewBox="0 0 24 24"><path d="M5 19 10 5l5 14M7 14h6M16 8h5M18.5 5.5v5"/></svg><span>字号</span></button>
+            <button class="tool-btn" id="btn-night"><svg viewBox="0 0 24 24"><path d="M20 15.5A8 8 0 1 1 8.5 4 6.5 6.5 0 0 0 20 15.5Z"/></svg><span>夜间</span></button>
+          </div>
+          <div class="tool-group"><button class="tool-btn next" id="btn-next"><span>下一页</span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
+        </footer>
       </div>
-      <div class="reading-progress">
-        <div class="reading-progress-bar" id="progress-bar" style="width:0%"></div>
-      </div>
-    </div>
-
-    <div class="last-read-indicator" id="last-read-badge" style="display:none">
-      📍 上次读到：<span id="last-read-name"></span>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls-bar">
-      <button class="control-btn" id="btn-music" title="背景音乐" aria-label="音乐开关">🔇</button>
-      <button class="control-btn" id="btn-night" title="夜间模式" aria-label="夜间模式">🌙</button>
-      <button class="control-btn" id="btn-font" title="字号调节" aria-label="字号">
-        A<span class="font-size-badge">中</span>
-      </button>
     </div>
   </main>
+</div>
+
+<div class="search-overlay" id="search-overlay" hidden>
+  <section class="search-dialog" role="dialog" aria-modal="true" aria-labelledby="search-title">
+    <h2 id="search-title" hidden>搜索故事</h2>
+    <form class="search-form" id="search-form" role="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <label for="search-input" hidden>搜索故事</label><input class="search-input" id="search-input" type="search" placeholder="搜索故事标题、简介或正文" autocomplete="off">
+      <button class="icon-btn" id="search-close" type="button" aria-label="关闭搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </form>
+    <div class="search-results" id="search-results" role="region" aria-live="polite"></div>
+  </section>
+</div>
+
+<div class="search-overlay" id="confirm-overlay" hidden>
+  <section class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+    <h2 id="confirm-title">清空全部阅读足迹？</h2><p id="confirm-text">这会删除所有阅读记录，但不会影响已收藏的故事。</p>
+    <div class="confirm-actions"><button class="btn" id="confirm-cancel">取消</button><button class="btn primary" id="confirm-clear">确认清空</button></div>
+  </section>
 </div>
 
 <script>
@@ -1960,8 +2005,133 @@ function init() {
   document.body.classList.add('loaded');
 }
 
-// Start
-document.addEventListener('DOMContentLoaded', init);
+/* Warm picture-book reading page behavior */
+function saveState() {
+  localStorage.setItem('andersen-current-story', state.currentStoryId);
+  localStorage.setItem('andersen-dark-mode', String(state.darkMode));
+  localStorage.setItem('andersen-font-size', state.fontSize);
+  localStorage.setItem('andersen-music', String(state.musicOn));
+}
+
+function loadState() {
+  const storyId = localStorage.getItem('andersen-current-story');
+  if (stories.some(story => story.id === storyId)) state.currentStoryId = storyId;
+  state.darkMode = localStorage.getItem('andersen-dark-mode') === 'true';
+  state.fontSize = localStorage.getItem('andersen-font-size') || 'medium';
+  state.musicOn = false;
+  document.body.classList.toggle('night', state.darkMode);
+  applyFontSize();
+}
+
+function applyFontSize() {
+  const sizes = { small: '18px', medium: '21px', large: '23px' };
+  document.documentElement.style.setProperty('--reader-size', sizes[state.fontSize] || sizes.medium);
+  const button = document.getElementById('btn-font');
+  if (button) button.title = `正文字号：${{ small: '小', medium: '中', large: '大' }[state.fontSize]}`;
+}
+
+function buildSidebar() {
+  const visibleStories = stories.slice(0, 10);
+  document.getElementById('story-list').innerHTML = visibleStories.map((story, index) => `
+    <button class="story-item${story.id === state.currentStoryId ? ' active' : ''}" data-id="${story.id}" aria-current="${story.id === state.currentStoryId ? 'page' : 'false'}">
+      <span class="story-cover" aria-hidden="true"></span>
+      <span class="story-meta"><span class="name">${story.title}</span><span class="story-status">${story.id === state.currentStoryId ? '阅读中 · 18%' : index < 3 ? '已读一部分' : '未开始'}</span></span>
+    </button>`).join('');
+  document.querySelectorAll('.story-item').forEach(item => item.addEventListener('click', () => {
+    switchStory(item.dataset.id);
+    closeSidebar();
+  }));
+}
+
+function updateProgress(percent) {
+  const rounded = Math.max(0, Math.min(100, Math.round(percent)));
+  document.getElementById('progress-bar').style.width = `${rounded}%`;
+  document.getElementById('progress-percent').textContent = `${rounded}%`;
+  document.getElementById('progress-text').textContent = `阅读进度 ${rounded}%`;
+  document.getElementById('time-left').textContent = `预计剩余 ${Math.max(1, Math.ceil((100 - rounded) / 14))} 分钟`;
+}
+
+function switchStory(id) {
+  const story = stories.find(item => item.id === id);
+  if (!story) return;
+  state.currentStoryId = id;
+  const wrapper = document.getElementById('card-wrapper');
+  wrapper.style.animation = 'none'; void wrapper.offsetWidth; wrapper.style.animation = 'paperRise .22s ease';
+  document.getElementById('story-title').textContent = story.title;
+  const body = document.getElementById('card-body');
+  body.innerHTML = story.content; body.scrollTop = 0;
+  updateProgress(0); buildSidebar(); saveState();
+}
+
+function cycleFontSize() {
+  const sizes = ['small', 'medium', 'large'];
+  state.fontSize = sizes[(sizes.indexOf(state.fontSize) + 1) % sizes.length];
+  applyFontSize(); saveState();
+}
+
+function toggleDarkMode() {
+  state.darkMode = !state.darkMode;
+  document.body.classList.toggle('night', state.darkMode);
+  document.getElementById('btn-night').classList.toggle('active', state.darkMode);
+  saveState();
+}
+
+function toggleMusic() {
+  state.musicOn = !state.musicOn;
+  const button = document.getElementById('btn-music');
+  button.classList.toggle('reading', state.musicOn);
+  button.querySelector('span').textContent = state.musicOn ? '暂停' : '朗读';
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    if (state.musicOn) {
+      const text = document.getElementById('card-body').innerText;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'zh-CN'; utterance.rate = .85;
+      utterance.onend = () => { state.musicOn = false; button.classList.remove('reading'); button.querySelector('span').textContent = '朗读'; };
+      speechSynthesis.speak(utterance);
+    }
+  }
+}
+
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('show'); }
+function setupMobileMenu() {
+  document.getElementById('menu-toggle').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('show'); });
+  document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
+}
+
+function setupProgressTracking() {
+  const body = document.getElementById('card-body');
+  body.addEventListener('scroll', () => {
+    const max = body.scrollHeight - body.clientHeight;
+    const percent = max > 0 ? body.scrollTop / max * 100 : 100;
+    updateProgress(percent);
+    localStorage.setItem(`andersen-scroll-${state.currentStoryId}`, String(body.scrollTop));
+  }, { passive: true });
+}
+
+function init() {
+  loadState(); buildSidebar();
+  const story = stories.find(item => item.id === state.currentStoryId) || stories[0];
+  document.getElementById('story-title').textContent = story.title;
+  document.getElementById('card-body').innerHTML = story.content;
+  updateProgress(18);
+  document.getElementById('btn-night').classList.toggle('active', state.darkMode);
+  document.getElementById('btn-night').addEventListener('click', toggleDarkMode);
+  document.getElementById('btn-font').addEventListener('click', cycleFontSize);
+  document.getElementById('btn-music').addEventListener('click', toggleMusic);
+  document.getElementById('btn-favorite').addEventListener('click', event => {
+    const button = event.currentTarget; button.classList.toggle('active'); button.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: 280 });
+    button.querySelector('span').textContent = button.classList.contains('active') ? '已收藏' : '收藏';
+  });
+  document.getElementById('btn-prev').addEventListener('click', () => { const i = stories.findIndex(item => item.id === state.currentStoryId); switchStory(stories[(i - 1 + stories.length) % stories.length].id); });
+  document.getElementById('btn-next').addEventListener('click', () => { const i = stories.findIndex(item => item.id === state.currentStoryId); switchStory(stories[(i + 1) % stories.length].id); });
+  setupMobileMenu(); setupProgressTracking(); document.body.classList.add('loaded');
+}
+
+window.stories = stories;
 </script>
+<script src="storage.js"></script>
+<script src="search.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
